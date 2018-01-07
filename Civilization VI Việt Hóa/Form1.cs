@@ -298,28 +298,39 @@ namespace Civilization_VI_Việt_Hóa
         {
             ProcessStartInfo processInfo = new ProcessStartInfo();
             processInfo.FileName = pathGame + "\\Base\\Binaries\\Win64Steam\\CivilizationVI.exe";
-            processInfo.ErrorDialog = true;
-            processInfo.UseShellExecute = false;
-            processInfo.RedirectStandardOutput = true;
-            processInfo.RedirectStandardError = true;
+            processInfo.UseShellExecute = true;
             processInfo.WorkingDirectory = Path.GetDirectoryName(pathGame + "\\Base\\Binaries\\Win64Steam\\CivilizationVI.exe");
-            Process proc = Process.Start(processInfo);
-            System.Threading.Thread.Sleep(1000);
-            System.Windows.Forms.Application.Exit();
+
+            try
+            {
+                Process proc = Process.Start(processInfo);
+                System.Threading.Thread.Sleep(3000);
+                System.Windows.Forms.Application.Exit();
+            }
+            catch (Exception exception) {
+                MessageBox.Show("Không thể khởi động Game.\n\nINFO: " + exception.Message, "Lỗi");
+            }
+            
         }
 
         private void sb0_Click(object sender, EventArgs e)
         {
             ProcessStartInfo processInfo = new ProcessStartInfo();
             processInfo.FileName = pathGame + "\\Base\\Binaries\\Win64Steam\\CivilizationVI_DX12.exe";
-            processInfo.ErrorDialog = true;
-            processInfo.UseShellExecute = false;
-            processInfo.RedirectStandardOutput = true;
-            processInfo.RedirectStandardError = true;
+            processInfo.UseShellExecute = true;
             processInfo.WorkingDirectory = Path.GetDirectoryName(pathGame + "\\Base\\Binaries\\Win64Steam\\CivilizationVI_DX12.exe");
-            Process proc = Process.Start(processInfo);
-            System.Threading.Thread.Sleep(1000);
-            System.Windows.Forms.Application.Exit();       
+
+            try
+            {
+                Process proc = Process.Start(processInfo);
+                System.Threading.Thread.Sleep(3000);
+                System.Windows.Forms.Application.Exit();
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show("Không thể khởi động Game.\n\nINFO: " + exception.Message, "Lỗi");
+            }
+
         }
 
         private void xKVNNToolStripMenuItem_Click(object sender, EventArgs e)
