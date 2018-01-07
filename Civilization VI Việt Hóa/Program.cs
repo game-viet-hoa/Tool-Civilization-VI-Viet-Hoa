@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace The_Long_Dark_Việt_Hóa
+namespace Civilization_VI_Việt_Hóa
 {
     static class Program
     {

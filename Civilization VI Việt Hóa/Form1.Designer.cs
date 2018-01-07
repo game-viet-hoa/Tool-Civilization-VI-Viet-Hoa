@@ -1,4 +1,4 @@
-﻿namespace The_Long_Dark_Việt_Hóa
+﻿namespace Civilization_VI_Việt_Hóa
 {
     partial class Form1
     {

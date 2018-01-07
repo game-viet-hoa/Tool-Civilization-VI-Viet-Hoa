@@ -13,7 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace The_Long_Dark_Việt_Hóa
+namespace Civilization_VI_Việt_Hóa
 {
     public partial class Form1 : Form
     {
