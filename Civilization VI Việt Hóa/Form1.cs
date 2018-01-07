@@ -1,11 +1,8 @@
 ﻿using Ionic.Zip;
 using Microsoft.Samples;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Security.Principal;
@@ -24,17 +21,31 @@ namespace Civilization_VI_Việt_Hóa
         private string versionVietHoaNew = "";
         private Boolean viethoa = true;
         private string strMaster = "master";
-        Boolean canFind = false;
+
         public Form1()
         {
-            InitializeComponent();
-            
+            InitializeComponent();      
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             CheckFolder();
 
+            GetVersionGameAndTool();
+
+            AddButtonPlay();
+
+            UpdateTextVersion();
+
+            CheckUpdateTool();
+
+            CheckVietHoa();
+
+            CheckWrite();
+        }
+
+        private void GetVersionGameAndTool()
+        {
             // Lay verion Game
             FileVersionInfo myFileVersionInfo = FileVersionInfo.GetVersionInfo(pathGame + "\\Base\\Binaries\\Win64Steam\\CivilizationVI.exe");
             versionGame = myFileVersionInfo.FileVersion;
@@ -42,8 +53,6 @@ namespace Civilization_VI_Việt_Hóa
             versionGame = versionGame.Substring(0, versionGame.IndexOf("(") - 1).Trim();
             if (versionGame.IndexOf(".") < 0)
                 versionGame = "unknow";
-
-
 
             // Lay version Moi nhat
             try
@@ -56,7 +65,7 @@ namespace Civilization_VI_Việt_Hóa
                 else
                     strMaster = versionGame;
                 webClient2.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
-                versionVietHoaNew = webClient2.DownloadString("https://raw.githubusercontent.com/xkvnn/Civilization-VI-Viet-Hoa/"+ strMaster + "/VERSION");                                                   
+                versionVietHoaNew = webClient2.DownloadString("https://raw.githubusercontent.com/xkvnn/Civilization-VI-Viet-Hoa/" + strMaster + "/VERSION");
             }
             catch { MessageBox.Show("Lỗi lấy thông tin phiên bản việt hóa mới nhất!"); }
             if (versionVietHoaNew.IndexOf(".") < 0)
@@ -69,12 +78,6 @@ namespace Civilization_VI_Việt_Hóa
                     Directory.Delete(pathGame + "\\" + strMaster, true);
             }
             catch { }
-
-            AddButtonPlay();
-            UpdateTextVersion();
-            CheckUpdateTool();
-            CheckVietHoa();
-            CheckWrite();
         }
 
         private void CheckWrite()
@@ -109,11 +112,13 @@ namespace Civilization_VI_Việt_Hóa
             }
             
         }
+
         public bool IsAdministrator()
         {
             return (new WindowsPrincipal(WindowsIdentity.GetCurrent()))
                     .IsInRole(WindowsBuiltInRole.Administrator);
         }
+
         private void CheckVietHoa()
         {
             if (File.Exists(pathGame + "\\VERSION"))
@@ -236,11 +241,9 @@ namespace Civilization_VI_Việt_Hóa
         {       
             if (File.Exists(Application.StartupPath + "\\Base\\Binaries\\Win64Steam\\CivilizationVI.exe"))
             {
-                canFind = true;
                 pathGame = Application.StartupPath + "\\";
             }else if (File.Exists(Application.StartupPath + "\\CivilizationVI.exe"))
             {
-                canFind = true;
                 pathGame = Application.StartupPath.Replace("\\Base\\Binaries\\Win64Steam","\\");
             }
             else if (Application.StartupPath.IndexOf("\\Base")>=0){
@@ -304,6 +307,7 @@ namespace Civilization_VI_Việt_Hóa
             System.Threading.Thread.Sleep(1000);
             System.Windows.Forms.Application.Exit();
         }
+
         private void sb0_Click(object sender, EventArgs e)
         {
             ProcessStartInfo processInfo = new ProcessStartInfo();
@@ -341,6 +345,7 @@ namespace Civilization_VI_Việt_Hóa
             });
             thread.Start();
         }
+
         void client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             this.BeginInvoke((MethodInvoker)delegate
@@ -351,6 +356,7 @@ namespace Civilization_VI_Việt_Hóa
                 label5.Text = "Đã tải " + e.BytesReceived / 1024 + " kB";
             });
         }
+
         void client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             this.BeginInvoke((MethodInvoker)delegate
@@ -441,6 +447,7 @@ namespace Civilization_VI_Việt_Hóa
         {
             TaiVietHoa();
         }
+
         private void TaiVietHoa()
         {
             Boolean updateXong = false;
@@ -497,6 +504,7 @@ namespace Civilization_VI_Việt_Hóa
                 startDownload();
             }
         }
+
         private void khôiPhụcTiếngAnhToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Boolean updateXong = false;
