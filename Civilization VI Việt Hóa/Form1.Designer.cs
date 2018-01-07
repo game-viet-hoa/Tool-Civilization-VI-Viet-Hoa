@@ -117,7 +117,7 @@
             // 
             this.tảiViệtHóaToolStripMenuItem.Name = "tảiViệtHóaToolStripMenuItem";
             this.tảiViệtHóaToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.tảiViệtHóaToolStripMenuItem.Text = "Tải việt hóa";
+            this.tảiViệtHóaToolStripMenuItem.Text = "Việt hóa tiếng Việt";
             this.tảiViệtHóaToolStripMenuItem.Click += new System.EventHandler(this.tảiViệtHóaToolStripMenuItem_Click);
             // 
             // khôiPhụcTiếngAnhToolStripMenuItem

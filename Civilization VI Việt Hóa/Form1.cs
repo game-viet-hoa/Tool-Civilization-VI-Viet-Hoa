@@ -24,7 +24,7 @@ namespace Civilization_VI_Việt_Hóa
 
         public Form1()
         {
-            InitializeComponent();      
+            InitializeComponent();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -67,17 +67,25 @@ namespace Civilization_VI_Việt_Hóa
                 webClient2.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
                 versionVietHoaNew = webClient2.DownloadString("https://raw.githubusercontent.com/xkvnn/Civilization-VI-Viet-Hoa/" + strMaster + "/VERSION");
             }
-            catch { MessageBox.Show("Lỗi lấy thông tin phiên bản việt hóa mới nhất!"); }
+            catch (Exception exception)
+            {
+                MessageBox.Show("Không thể lấy thông tin phiên bản việt hóa mới nhất!\n\n" + exception.Message, "LỖI");
+            }
+
             if (versionVietHoaNew.IndexOf(".") < 0)
                 versionVietHoaNew = "";
             if (versionGameNew.IndexOf(".") < 0)
                 versionGameNew = "";
+
             try
             {
                 if (Directory.Exists(pathGame + "\\" + strMaster))
                     Directory.Delete(pathGame + "\\" + strMaster, true);
             }
-            catch { }
+            catch (Exception exception)
+            {
+                MessageBox.Show("Không thể xóa thư mục " + pathGame + "\\" + strMaster + "\n\n" + exception.Message, "LỖI");
+            }
         }
 
         private void CheckWrite()
@@ -89,7 +97,7 @@ namespace Civilization_VI_Việt_Hóa
                 if (File.Exists(pathGame + "\\fileTest.txt"))
                     File.Delete(pathGame + "\\fileTest.txt");
             }
-            catch { canWrite = false;}
+            catch { canWrite = false; }
 
             if ((!canWrite) && (IsAdministrator() == false))
             {
@@ -110,10 +118,10 @@ namespace Civilization_VI_Việt_Hóa
                 }
                 Application.Exit();  // Quit itself
             }
-            
+
         }
 
-        public bool IsAdministrator()
+        private bool IsAdministrator()
         {
             return (new WindowsPrincipal(WindowsIdentity.GetCurrent()))
                     .IsInRole(WindowsBuiltInRole.Administrator);
@@ -166,7 +174,7 @@ namespace Civilization_VI_Việt_Hóa
             this.Controls.Add(sb);
             sb.Click += new System.EventHandler(this.sb_Click);
             sb.ContextMenuStrip.Items[0].Click += new System.EventHandler(this.sb0_Click);
-            
+
             label5.Visible = false;
         }
 
@@ -238,15 +246,17 @@ namespace Civilization_VI_Việt_Hóa
         }
 
         private void CheckFolder()
-        {       
+        {
             if (File.Exists(Application.StartupPath + "\\Base\\Binaries\\Win64Steam\\CivilizationVI.exe"))
             {
                 pathGame = Application.StartupPath + "\\";
-            }else if (File.Exists(Application.StartupPath + "\\CivilizationVI.exe"))
-            {
-                pathGame = Application.StartupPath.Replace("\\Base\\Binaries\\Win64Steam","\\");
             }
-            else if (Application.StartupPath.IndexOf("\\Base")>=0){
+            else if (File.Exists(Application.StartupPath + "\\CivilizationVI.exe"))
+            {
+                pathGame = Application.StartupPath.Replace("\\Base\\Binaries\\Win64Steam", "\\");
+            }
+            else if (Application.StartupPath.IndexOf("\\Base") >= 0)
+            {
                 pathGame = Application.StartupPath.Substring(0, Application.StartupPath.IndexOf("\\Base"));
             }
             else
@@ -254,43 +264,52 @@ namespace Civilization_VI_Việt_Hóa
                 MessageBox.Show("Hãy để File này vào trong thư mục Game!");
                 System.Windows.Forms.Application.Exit();
             }
-            
+
         }
 
         private void CheckUpdateTool()
         {
-            // Kiem tra Version Tool
             FileVersionInfo myFileVersionInfo2 = FileVersionInfo.GetVersionInfo(Application.ExecutablePath);
             var versionTool = myFileVersionInfo2.FileVersion;
             this.Text = "Civilization VI Việt Hóa v" + versionTool;
             var versionToolNew = "";
+
             try
             {
                 var webClient = new WebClient();
                 webClient.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
                 versionToolNew = webClient.DownloadString("https://raw.githubusercontent.com/xkvnn/Civilization-VI-Viet-Hoa/master/VERSIONTOOL");
             }
-            catch { MessageBox.Show("Lỗi lấy thông tin phiên bản Tool mới nhất!"); }
+            catch (Exception exception)
+            {
+                MessageBox.Show("Không thể lấy thông tin phiên bản Tool mới nhất!\n\n" + exception.Message, "LỖI");
+            }
+
             if ((versionToolNew.IndexOf(".") > 0) && (versionTool != versionToolNew))
             {
                 var contantNew = "";
-                var webClient = new WebClient();
-                webClient.Encoding = Encoding.UTF8;
-                webClient.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
-                contantNew = webClient.DownloadString("https://github.com/xkvnn/Civilization-VI-Viet-Hoa/commits/master/Civilization%20VI%20Vi%E1%BB%87t%20H%C3%B3a.exe");
+
+                try
+                {
+                    var webClient = new WebClient();
+                    webClient.Encoding = Encoding.UTF8;
+                    webClient.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
+                    contantNew = webClient.DownloadString("https://github.com/xkvnn/Civilization-VI-Viet-Hoa/commits/master/Civilization%20VI%20Vi%E1%BB%87t%20H%C3%B3a.exe");
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show("Không thể lấy thông tin phiên bản Tool mới nhất!\n\n" + exception.Message, "LỖI");
+                }
 
                 contantNew = contantNew.Substring(contantNew.IndexOf("table-list-cell commit-avatar-cell"));
-
                 contantNew = contantNew.Substring(0, contantNew.IndexOf("commit-meta commit-author-section"));
                 contantNew = contantNew.Substring(contantNew.IndexOf("title=") + 7);
                 contantNew = contantNew.Substring(0, contantNew.IndexOf(">") - 1);
 
                 DialogResult dialogResult = MessageBox.Show("Tool có phiên bản mới (" + versionToolNew + "):\n    " + contantNew + "\n\nBạn có muốn tải không?", "Tool Update", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)
-                {
                     System.Diagnostics.Process.Start("https://raw.githubusercontent.com/xkvnn/Civilization-VI-Viet-Hoa/master/Civilization%20VI%20Vi%E1%BB%87t%20H%C3%B3a.exe");
 
-                }
             }
         }
 
@@ -307,10 +326,11 @@ namespace Civilization_VI_Việt_Hóa
                 System.Threading.Thread.Sleep(3000);
                 System.Windows.Forms.Application.Exit();
             }
-            catch (Exception exception) {
+            catch (Exception exception)
+            {
                 MessageBox.Show("Không thể khởi động Game.\n\nINFO: " + exception.Message, "Lỗi");
             }
-            
+
         }
 
         private void sb0_Click(object sender, EventArgs e)
@@ -335,12 +355,12 @@ namespace Civilization_VI_Việt_Hóa
 
         private void xKVNNToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://www.facebook.com/groups/1245814878810301/");
+            System.Diagnostics.Process.Start("https://www.facebook.com/groups/Civilization6VietHoa/");
         }
 
         private void donateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Hỗ trợ tác giả mua Game Steam để luôn có những bản cập nhật mới nhất.");
+            MessageBox.Show("Hãy hỗ trợ tác giả để luôn có những bản cập nhật mới nhất.");
             System.Diagnostics.Process.Start("https://www.facebook.com/xkvnn");
         }
 
@@ -351,8 +371,8 @@ namespace Civilization_VI_Việt_Hóa
                 WebClient client = new WebClient();
                 client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
                 client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
-                client.DownloadFileAsync(new Uri("https://github.com/xkvnn/Civilization-VI-Viet-Hoa/archive/"+ strMaster + ".zip"),
-                    pathGame + "\\"+strMaster+".zip");
+                client.DownloadFileAsync(new Uri("https://github.com/xkvnn/Civilization-VI-Viet-Hoa/archive/" + strMaster + ".zip"),
+                    pathGame + "\\" + strMaster + ".zip");
             });
             thread.Start();
         }
@@ -372,7 +392,7 @@ namespace Civilization_VI_Việt_Hóa
         {
             this.BeginInvoke((MethodInvoker)delegate
             {
-                if (File.Exists(pathGame + "\\"+strMaster+".zip"))
+                if (File.Exists(pathGame + "\\" + strMaster + ".zip"))
                 {
                     ExtractFileToDirectory(pathGame + "\\" + strMaster + ".zip", pathGame + "\\" + strMaster);
                 }
@@ -436,17 +456,27 @@ namespace Civilization_VI_Việt_Hóa
         }
         public void ExtractFileToDirectory(string zipFileName, string outputDirectory)
         {
-            try {
+            try
+            {
                 ZipFile zip = ZipFile.Read(zipFileName);
                 Directory.CreateDirectory(outputDirectory);
                 foreach (ZipEntry e in zip)
                 {
-                    // check if you want to extract e or not
-
                     e.Extract(outputDirectory, ExtractExistingFileAction.OverwriteSilently);
                 }
             }
-            catch { MessageBox.Show("Lỗi giải nén file!"); }
+            catch
+            {
+                DialogErrorUnzip dialogErrorUnzip = new DialogErrorUnzip(strMaster);
+                DialogResult dr = dialogErrorUnzip.ShowDialog(this);
+
+                try
+                {
+                    if (File.Exists(pathGame + "\\" + strMaster + ".zip"))
+                        File.Delete(pathGame + "\\" + strMaster + ".zip");
+                }
+                catch { }
+            }
         }
 
         private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
@@ -461,7 +491,6 @@ namespace Civilization_VI_Việt_Hóa
 
         private void TaiVietHoa()
         {
-            Boolean updateXong = false;
             if (File.Exists(pathGame + "\\" + strMaster + ".zip"))
             {
                 try
@@ -496,7 +525,6 @@ namespace Civilization_VI_Việt_Hóa
                                 }
                                 catch { }
 
-                                updateXong = true;
                                 label5.Visible = true;
                                 label5.Text = "Việt hóa thành công!";
                                 UpdateTextVersion();
@@ -505,9 +533,7 @@ namespace Civilization_VI_Việt_Hóa
                     }
                 }
                 catch { }
-            }
-
-            if (!updateXong)
+            } else
             {
                 viethoa = true;
                 label5.Visible = true;
@@ -518,7 +544,6 @@ namespace Civilization_VI_Việt_Hóa
 
         private void khôiPhụcTiếngAnhToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Boolean updateXong = false;
             if (File.Exists(pathGame + "\\" + strMaster + ".zip"))
             {
                 try
@@ -547,16 +572,13 @@ namespace Civilization_VI_Việt_Hóa
                         }
                         catch { }
 
-                        updateXong = true;
                         label5.Visible = true;
                         label5.Text = "Khôi phục thành công!";
                         UpdateTextVersion();
                     }
                 }
                 catch { }
-            }
-
-            if (!updateXong)
+            } else
             {
                 DialogResult dialogResult = MessageBox.Show("Chắc không?", "Khôi phục tiếng Anh", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)

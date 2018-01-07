@@ -64,6 +64,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DialogErrorUnzip.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DialogErrorUnzip.Designer.cs">
+      <DependentUpon>DialogErrorUnzip.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -75,6 +81,9 @@
     <Compile Include="SplitButton.cs">
       <SubType>Component</SubType>
     </Compile>
+    <EmbeddedResource Include="DialogErrorUnzip.resx">
+      <DependentUpon>DialogErrorUnzip.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
