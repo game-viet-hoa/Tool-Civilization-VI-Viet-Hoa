@@ -17,7 +17,7 @@ namespace Civilization_VI_Việt_Hóa
 {
     public partial class Form1 : Form
     {
-        private string pathGame = "E:\\Game\\Sid Meiers Civilization VI";
+        private string pathGame = "D:\\Game\\Civilization VI";
         private string versionGame = "unknow";
         private string versionVietHoa = "unknow";
         private string versionGameNew = "";
@@ -43,19 +43,7 @@ namespace Civilization_VI_Việt_Hóa
             if (versionGame.IndexOf(".") < 0)
                 versionGame = "unknow";
 
-            // Lay verion Viet Hoa
-            if (File.Exists(pathGame + "\\VERSION"))
-            {
-                string[] readText = File.ReadAllLines(pathGame + "\\VERSION");
-                foreach (string s in readText)
-                {
-                    if (s.IndexOf(".") >= 0)
-                    {
-                        versionVietHoa = s.Trim();
-                        break;
-                    }
-                }
-            }
+
 
             // Lay version Moi nhat
             try
@@ -83,6 +71,7 @@ namespace Civilization_VI_Việt_Hóa
             catch { }
 
             AddButtonPlay();
+            UpdateTextVersion();
             CheckUpdateTool();
             CheckVietHoa();
             CheckWrite();
@@ -172,6 +161,25 @@ namespace Civilization_VI_Việt_Hóa
             this.Controls.Add(sb);
             sb.Click += new System.EventHandler(this.sb_Click);
             sb.ContextMenuStrip.Items[0].Click += new System.EventHandler(this.sb0_Click);
+            
+            label5.Visible = false;
+        }
+
+        private void UpdateTextVersion()
+        {
+            // Lay verion Viet Hoa
+            if (File.Exists(pathGame + "\\VERSION"))
+            {
+                string[] readText = File.ReadAllLines(pathGame + "\\VERSION");
+                foreach (string s in readText)
+                {
+                    if (s.IndexOf(".") >= 0)
+                    {
+                        versionVietHoa = s.Trim();
+                        break;
+                    }
+                }
+            }
 
             if ((versionGameNew == versionGame) && (versionVietHoaNew == versionVietHoa))
             {
@@ -222,8 +230,6 @@ namespace Civilization_VI_Việt_Hóa
                 label2.Text = strlb2;
                 label4.Text = strlb4;
             }
-
-            label5.Visible = false;
         }
 
         private void CheckFolder()
@@ -475,6 +481,7 @@ namespace Civilization_VI_Việt_Hóa
                                 updateXong = true;
                                 label5.Visible = true;
                                 label5.Text = "Việt hóa thành công!";
+                                UpdateTextVersion();
                             }
                         }
                     }
@@ -524,6 +531,7 @@ namespace Civilization_VI_Việt_Hóa
                         updateXong = true;
                         label5.Visible = true;
                         label5.Text = "Khôi phục thành công!";
+                        UpdateTextVersion();
                     }
                 }
                 catch { }
