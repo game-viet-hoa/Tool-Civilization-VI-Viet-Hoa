@@ -15,6 +15,9 @@ namespace Civilization_VI_Việt_Hóa
     public partial class Form1 : Form
     {
         private string pathGame = "D:\\Game\\Civilization VI";
+        private string pathMods = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\My Games\Sid Meier's Civilization VI\Mods";
+        private string versionStepOne = "1.0.0.194";
+        private Boolean stepTwo = false;
         private string versionGame = "unknow";
         private string versionVietHoa = "unknow";
         private string versionGameNew = "";
@@ -38,12 +41,21 @@ namespace Civilization_VI_Việt_Hóa
             UpdateTextVersion();
 
             CheckUpdateTool();
-
-            CheckVietHoa();
-
+            
             CheckWrite();
-        }
 
+            var version1 = new Version(versionStepOne);
+            var version2 = new Version(versionGame);
+
+            var result = version1.CompareTo(version2);
+            if (result < 0) stepTwo = true;
+
+            if (stepTwo && File.Exists(pathGame + "\\VERSION"))
+                MessageBox.Show("Do một số thay đổi, xin vui lòng khôi phục tiếng Anh rồi tắt bật lại Tool để sử dụng tiếp.\n\nMenu: Việt hóa -> Khôi phục tiếng Anh");
+            else
+                CheckVietHoa();
+        }
+        
         private void GetVersionGameAndTool()
         {
             // Lay verion Game
@@ -138,9 +150,10 @@ namespace Civilization_VI_Việt_Hóa
 
         private void CheckVietHoa()
         {
-            if (File.Exists(pathGame + "\\VERSION"))
+            var path = stepTwo ? pathMods + "\\Civilization-VI-Viet-Hoa" + "\\VERSION" : pathGame + "\\VERSION";
+            if (File.Exists(path))
             {
-                string[] readText = File.ReadAllLines(pathGame + "\\VERSION");
+                string[] readText = File.ReadAllLines(path);
                 foreach (string s in readText)
                 {
                     if (s.IndexOf(".") >= 0)
