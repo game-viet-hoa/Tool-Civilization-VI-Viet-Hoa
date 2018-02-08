@@ -60,10 +60,19 @@ namespace Civilization_VI_Việt_Hóa
                 var webClient2 = new WebClient();
                 webClient2.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
                 versionGameNew = webClient2.DownloadString("https://raw.githubusercontent.com/xkvnn/Civilization-VI-Viet-Hoa/master/VERSIONGAME");
+
+                var version1 = new Version(versionGame);
+                var version2 = new Version(versionGameNew);
+
+                var result = version1.CompareTo(version2);
+                if (result > 0)
+                    versionGameNew = versionGame;
+                
                 if (versionGameNew == versionGame)
                     strMaster = "master";
                 else
                     strMaster = versionGame;
+                
                 webClient2.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
                 versionVietHoaNew = webClient2.DownloadString("https://raw.githubusercontent.com/xkvnn/Civilization-VI-Viet-Hoa/" + strMaster + "/VERSION");
             }
