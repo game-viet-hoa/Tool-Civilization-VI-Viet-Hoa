@@ -202,10 +202,12 @@ namespace Civilization_VI_Việt_Hóa
 
         private void UpdateTextVersion()
         {
+            var path = stepTwo ? pathMods + "\\Civilization-VI-Viet-Hoa" + "\\VERSION" : pathGame + "\\VERSION";
+
             // Lay verion Viet Hoa
-            if (File.Exists(pathGame + "\\VERSION"))
+            if (File.Exists(path + "\\VERSION"))
             {
-                string[] readText = File.ReadAllLines(pathGame + "\\VERSION");
+                string[] readText = File.ReadAllLines(path + "\\VERSION");
                 foreach (string s in readText)
                 {
                     if (s.IndexOf(".") >= 0)
