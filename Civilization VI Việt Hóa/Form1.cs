@@ -1,5 +1,7 @@
 ﻿using Ionic.Zip;
 using Microsoft.Samples;
+using SharpRaven;
+using SharpRaven.Data;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -14,8 +16,11 @@ namespace Civilization_VI_Việt_Hóa
 {
     public partial class Form1 : Form
     {
+        RavenClient ravenClient = new RavenClient("https://66399bdc29864a0a8c57f529fd6e31cf:97d7a912bdf7428895d0cab1cf7128ce@sentry.io/288060");
+
         private string pathGame = "D:\\Game\\Civilization VI";
-        private string pathMods = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\My Games\Sid Meier's Civilization VI\Mods";
+        private string pathMods = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\My Games\Sid Meier's Civilization VI\Mods\Civilization-VI-Viet-Hoa";
+        private string pathVERSION;
         private string versionStepOne = "1.0.0.194";
         private Boolean stepTwo = false;
         private string versionGame = "unknow";
@@ -32,28 +37,38 @@ namespace Civilization_VI_Việt_Hóa
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            CheckFolder();
+            try
+            {
+                //CheckFolder();
 
-            GetVersionGameAndTool();
+                GetVersionGameAndTool();
 
-            AddButtonPlay();
+                AddButtonPlay();
 
-            UpdateTextVersion();
+                UpdateTextVersion();
 
-            CheckUpdateTool();
-            
-            CheckWrite();
+                CheckUpdateTool();
 
-            var version1 = new Version(versionStepOne);
-            var version2 = new Version(versionGame);
+                CheckWrite();
 
-            var result = version1.CompareTo(version2);
-            if (result < 0) stepTwo = true;
+                var version1 = new Version(versionStepOne);
+                var version2 = new Version(versionGame);
 
-            if (stepTwo && File.Exists(pathGame + "\\VERSION"))
-                MessageBox.Show("Do một số thay đổi, xin vui lòng khôi phục tiếng Anh rồi tắt bật lại Tool để sử dụng tiếp.\n\nMenu: Việt hóa -> Khôi phục tiếng Anh");
-            else
-                CheckVietHoa();
+                var result = version1.CompareTo(version2);
+                if (result < 0) stepTwo = true;
+
+                pathVERSION = stepTwo ? pathMods + "\\VERSION" : pathGame + "\\VERSION";
+
+                if (stepTwo && File.Exists(pathGame + "\\VERSION"))
+                    MessageBox.Show("Do một số thay đổi, xin vui lòng khôi phục tiếng Anh rồi tắt bật lại Tool để sử dụng tiếp.\n\nMenu: Việt hóa -> Khôi phục tiếng Anh");
+                else
+                    CheckVietHoa();
+            }
+            catch (Exception exception)
+            {
+                ravenClient.Capture(new SentryEvent(exception));
+            }
+
         }
         
         private void GetVersionGameAndTool()
@@ -90,6 +105,7 @@ namespace Civilization_VI_Việt_Hóa
             }
             catch (Exception exception)
             {
+                ravenClient.Capture(new SentryEvent(exception));
                 MessageBox.Show("Không thể lấy thông tin phiên bản việt hóa mới nhất!\n\n" + exception.Message, "LỖI");
             }
 
@@ -105,6 +121,7 @@ namespace Civilization_VI_Việt_Hóa
             }
             catch (Exception exception)
             {
+                ravenClient.Capture(new SentryEvent(exception));
                 MessageBox.Show("Không thể xóa thư mục " + pathGame + "\\" + strMaster + "\n\n" + exception.Message, "LỖI");
             }
         }
@@ -150,7 +167,7 @@ namespace Civilization_VI_Việt_Hóa
 
         private void CheckVietHoa()
         {
-            var path = stepTwo ? pathMods + "\\Civilization-VI-Viet-Hoa" + "\\VERSION" : pathGame + "\\VERSION";
+            var path = stepTwo ? pathMods + "\\VERSION" : pathGame + "\\VERSION";
             if (File.Exists(path))
             {
                 string[] readText = File.ReadAllLines(path);
@@ -202,7 +219,7 @@ namespace Civilization_VI_Việt_Hóa
 
         private void UpdateTextVersion()
         {
-            var path = stepTwo ? pathMods + "\\Civilization-VI-Viet-Hoa" + "\\VERSION" : pathGame + "\\VERSION";
+            var path = stepTwo ? pathMods + "\\VERSION" : pathGame + "\\VERSION";
 
             // Lay verion Viet Hoa
             if (File.Exists(path + "\\VERSION"))
@@ -306,9 +323,10 @@ namespace Civilization_VI_Việt_Hóa
             }
             catch (Exception exception)
             {
+                ravenClient.Capture(new SentryEvent(exception));
                 MessageBox.Show("Không thể lấy thông tin phiên bản Tool mới nhất!\n\n" + exception.Message, "LỖI");
             }
-
+            
             if ((versionToolNew.IndexOf(".") > 0) && (versionTool != versionToolNew))
             {
                 var contantNew = "";
@@ -318,13 +336,14 @@ namespace Civilization_VI_Việt_Hóa
                     var webClient = new WebClient();
                     webClient.Encoding = Encoding.UTF8;
                     webClient.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
-                    contantNew = webClient.DownloadString("https://github.com/xkvnn/Civilization-VI-Viet-Hoa/commits/master/Civilization%20VI%20Vi%E1%BB%87t%20H%C3%B3a.exe");
+                    contantNew = webClient.DownloadString("https://github.com/xkvnn/Civilization-VI-Viet-Hoa/releases/download/latest/Civilization.VI.Viet.Hoa.exe");
                 }
                 catch (Exception exception)
                 {
+                    ravenClient.Capture(new SentryEvent(exception));
                     MessageBox.Show("Không thể lấy thông tin phiên bản Tool mới nhất!\n\n" + exception.Message, "LỖI");
                 }
-
+                
                 contantNew = contantNew.Substring(contantNew.IndexOf("table-list-cell commit-avatar-cell"));
                 contantNew = contantNew.Substring(0, contantNew.IndexOf("commit-meta commit-author-section"));
                 contantNew = contantNew.Substring(contantNew.IndexOf("title=") + 7);
@@ -352,9 +371,10 @@ namespace Civilization_VI_Việt_Hóa
             }
             catch (Exception exception)
             {
+                ravenClient.Capture(new SentryEvent(exception));
                 MessageBox.Show("Không thể khởi động Game.\n\nINFO: " + exception.Message, "Lỗi");
             }
-
+            
         }
 
         private void sb0_Click(object sender, EventArgs e)
@@ -372,6 +392,7 @@ namespace Civilization_VI_Việt_Hóa
             }
             catch (Exception exception)
             {
+                ravenClient.Capture(new SentryEvent(exception));
                 MessageBox.Show("Không thể khởi động Game.\n\nINFO: " + exception.Message, "Lỗi");
             }
 
@@ -422,19 +443,12 @@ namespace Civilization_VI_Việt_Hóa
                 }
                 if (viethoa == true)
                 {
-                    if (Directory.Exists(pathGame + "\\" + strMaster + "\\Civilization-VI-Viet-Hoa-" + strMaster + "\\Vietnamese"))
+                    var SourcePath = pathGame + "\\" + strMaster + "\\Civilization-VI-Viet-Hoa-" + strMaster + "\\Vietnamese";
+                    if (Directory.Exists(SourcePath))
                     {
-                        var SourcePath = pathGame + "\\" + strMaster + "\\Civilization-VI-Viet-Hoa-" + strMaster + "\\Vietnamese";
-                        //Now Create all of the directories
-                        foreach (string dirPath in Directory.GetDirectories(SourcePath, "*",
-                            SearchOption.AllDirectories))
-                            Directory.CreateDirectory(dirPath.Replace(SourcePath, pathGame));
+                        CopyAllFileInZip(SourcePath, viethoa);
 
-                        //Copy all the files & Replaces any files with the same name
-                        foreach (string newPath in Directory.GetFiles(SourcePath, "*.*",
-                            SearchOption.AllDirectories))
-                            File.Copy(newPath, newPath.Replace(SourcePath, pathGame), true);
-                        File.Copy(pathGame + "\\" + strMaster + "\\Civilization-VI-Viet-Hoa-" + strMaster + "\\VERSION", pathGame + "\\VERSION", true);
+                        File.Copy(pathGame + "\\" + strMaster + "\\Civilization-VI-Viet-Hoa-" + strMaster + "\\VERSION", pathVERSION, true);
                         label5.Text = "Việt hóa thành công!";
                     }
                     else
@@ -444,25 +458,37 @@ namespace Civilization_VI_Việt_Hóa
                 }
                 else
                 {
+                    if (stepTwo)
+                    {
+                        try
+                        {
+                            if (Directory.Exists(pathMods))
+                                Directory.Delete(pathMods, true);
+                        }
+                        catch (Exception exception)
+                        {
+                            ravenClient.Capture(new SentryEvent(exception));
+                        }
+
+                        label5.Visible = true;
+                        label5.Text = "Khôi phục thành công!";
+                        UpdateTextVersion();
+
+                        return;
+                    }
+
                     if (File.Exists(pathGame + "\\" + strMaster + "\\Civilization-VI-Viet-Hoa-" + strMaster + "\\Original\\" + versionGame + ".zip"))
                     {
                         ExtractFileToDirectory(pathGame + "\\" + strMaster + "\\Civilization-VI-Viet-Hoa-" + strMaster + "\\Original\\" + versionGame + ".zip", pathGame + "\\" + strMaster + "\\English");
                     }
 
-                    if (Directory.Exists(pathGame + "\\" + strMaster + "\\English"))
+                    var SourcePath = pathGame + "\\" + strMaster + "\\English";
+                    if (Directory.Exists(SourcePath))
                     {
-                        var SourcePath = pathGame + "\\" + strMaster + "\\English";
-                        //Now Create all of the directories
-                        foreach (string dirPath in Directory.GetDirectories(SourcePath, "*",
-                            SearchOption.AllDirectories))
-                            Directory.CreateDirectory(dirPath.Replace(SourcePath, pathGame));
+                        CopyAllFileInZip(SourcePath, viethoa);
 
-                        //Copy all the files & Replaces any files with the same name
-                        foreach (string newPath in Directory.GetFiles(SourcePath, "*.*",
-                            SearchOption.AllDirectories))
-                            File.Copy(newPath, newPath.Replace(SourcePath, pathGame), true);
+                        File.Delete(pathVERSION);
 
-                        File.Delete(pathGame + "\\VERSION");
                         label5.Text = "Khôi phục thành công!";
                     }
                     else
@@ -475,13 +501,17 @@ namespace Civilization_VI_Việt_Hóa
                     if (Directory.Exists(pathGame + "\\" + strMaster))
                         Directory.Delete(pathGame + "\\" + strMaster, true);
                 }
-                catch { }
+                catch (Exception exception)
+                {
+                    ravenClient.Capture(new SentryEvent(exception));
+                }
             });
         }
         public void ExtractFileToDirectory(string zipFileName, string outputDirectory)
         {
             try
             {
+
                 ZipFile zip = ZipFile.Read(zipFileName);
                 Directory.CreateDirectory(outputDirectory);
                 foreach (ZipEntry e in zip)
@@ -489,8 +519,10 @@ namespace Civilization_VI_Việt_Hóa
                     e.Extract(outputDirectory, ExtractExistingFileAction.OverwriteSilently);
                 }
             }
-            catch
+            catch (Exception exception)
             {
+                ravenClient.Capture(new SentryEvent(exception));
+                        
                 DialogErrorUnzip dialogErrorUnzip = new DialogErrorUnzip(strMaster);
                 DialogResult dr = dialogErrorUnzip.ShowDialog(this);
 
@@ -499,7 +531,9 @@ namespace Civilization_VI_Việt_Hóa
                     if (File.Exists(pathGame + "\\" + strMaster + ".zip"))
                         File.Delete(pathGame + "\\" + strMaster + ".zip");
                 }
-                catch { }
+                catch (Exception exception2) { 
+                    ravenClient.Capture(new SentryEvent(exception2));
+                }
             }
         }
 
@@ -530,24 +564,19 @@ namespace Civilization_VI_Việt_Hóa
                             if (versionVietHoaNew == strTemp)
                             {
                                 var SourcePath = pathGame + "\\" + strMaster + "\\Civilization-VI-Viet-Hoa-" + strMaster + "\\Vietnamese";
-                                //Now Create all of the directories
-                                foreach (string dirPath in Directory.GetDirectories(SourcePath, "*",
-                                    SearchOption.AllDirectories))
-                                    Directory.CreateDirectory(dirPath.Replace(SourcePath, pathGame));
+                                CopyAllFileInZip(SourcePath, true);
 
-                                //Copy all the files & Replaces any files with the same name
-                                foreach (string newPath in Directory.GetFiles(SourcePath, "*.*",
-                                    SearchOption.AllDirectories))
-                                    File.Copy(newPath, newPath.Replace(SourcePath, pathGame), true);
-
-                                File.Copy(pathGame + "\\" + strMaster + "\\Civilization-VI-Viet-Hoa-" + strMaster + "\\VERSION", pathGame + "\\VERSION", true);
+                                File.Copy(pathGame + "\\" + strMaster + "\\Civilization-VI-Viet-Hoa-" + strMaster + "\\VERSION", pathVERSION, true);
 
                                 try
                                 {
                                     if (Directory.Exists(pathGame + "\\" + strMaster))
                                         Directory.Delete(pathGame + "\\" + strMaster, true);
                                 }
-                                catch { }
+                                catch (Exception exception)
+                                {
+                                    ravenClient.Capture(new SentryEvent(exception));
+                                }
 
                                 label5.Visible = true;
                                 label5.Text = "Việt hóa thành công!";
@@ -556,7 +585,10 @@ namespace Civilization_VI_Việt_Hóa
                         }
                     }
                 }
-                catch { }
+                catch (Exception exception)
+                {
+                    ravenClient.Capture(new SentryEvent(exception));
+                }
             } else
             {
                 viethoa = true;
@@ -568,6 +600,25 @@ namespace Civilization_VI_Việt_Hóa
 
         private void khôiPhụcTiếngAnhToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (stepTwo)
+            {
+                try
+                {
+                    if (Directory.Exists(pathMods))
+                        Directory.Delete(pathMods, true);
+                }
+                catch (Exception exception)
+                {
+                    ravenClient.Capture(new SentryEvent(exception));
+                }
+
+                label5.Visible = true;
+                label5.Text = "Khôi phục thành công!";
+                UpdateTextVersion();
+
+                return;
+            }
+
             if (File.Exists(pathGame + "\\" + strMaster + ".zip"))
             {
                 try
@@ -577,31 +628,40 @@ namespace Civilization_VI_Việt_Hóa
                     {
                         ExtractFileToDirectory(pathGame + "\\" + strMaster + "\\Civilization-VI-Viet-Hoa-" + strMaster + "\\Original\\" + versionGame + ".zip", pathGame + "\\" + strMaster + "\\English");
                         var SourcePath = pathGame + "\\" + strMaster + "\\English";
-                        //Now Create all of the directories
-                        foreach (string dirPath in Directory.GetDirectories(SourcePath, "*",
-                            SearchOption.AllDirectories))
-                            Directory.CreateDirectory(dirPath.Replace(SourcePath, pathGame));
+                        CopyAllFileInZip(SourcePath, false);
 
-                        //Copy all the files & Replaces any files with the same name
-                        foreach (string newPath in Directory.GetFiles(SourcePath, "*.*",
-                            SearchOption.AllDirectories))
-                            File.Copy(newPath, newPath.Replace(SourcePath, pathGame), true);
+                        File.Delete(pathVERSION);
 
-                        File.Delete(pathGame + "\\VERSION");
+                        try
+                        {
+                            if (Directory.Exists(pathMods))
+                                Directory.Delete(pathMods, true);
+                        }
+                        catch (Exception exception)
+                        {
+                            ravenClient.Capture(new SentryEvent(exception));
+                            Console.WriteLine(exception.Message);
+                        }
 
                         try
                         {
                             if (Directory.Exists(pathGame + "\\" + strMaster))
                                 Directory.Delete(pathGame + "\\" + strMaster, true);
                         }
-                        catch { }
+                        catch (Exception exception) {
+                            ravenClient.Capture(new SentryEvent(exception));
+                            Console.WriteLine(exception.Message);
+                        }
 
                         label5.Visible = true;
                         label5.Text = "Khôi phục thành công!";
                         UpdateTextVersion();
                     }
                 }
-                catch { }
+                catch (Exception exception){
+                    ravenClient.Capture(new SentryEvent(exception));
+                    Console.WriteLine(exception.Message);
+                }
             } else
             {
                 DialogResult dialogResult = MessageBox.Show("Chắc không?", "Khôi phục tiếng Anh", MessageBoxButtons.YesNo);
@@ -614,6 +674,21 @@ namespace Civilization_VI_Việt_Hóa
 
                 }
             }
+        }
+
+        private void CopyAllFileInZip(String SourcePath, Boolean vh)
+        {
+            var pathPaste = vh == true && stepTwo == true ? pathMods : pathGame;
+
+            //Now Create all of the directories
+            foreach (string dirPath in Directory.GetDirectories(SourcePath, "*",
+                SearchOption.AllDirectories))
+                Directory.CreateDirectory(dirPath.Replace(SourcePath, pathPaste));
+
+            //Copy all the files & Replaces any files with the same name
+            foreach (string newPath in Directory.GetFiles(SourcePath, "*.*",
+                SearchOption.AllDirectories))
+                File.Copy(newPath, newPath.Replace(SourcePath, pathPaste), true);
         }
     }
 }
