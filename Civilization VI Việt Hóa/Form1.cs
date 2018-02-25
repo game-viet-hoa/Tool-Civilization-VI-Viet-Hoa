@@ -39,7 +39,7 @@ namespace Civilization_VI_Việt_Hóa
         {
             try
             {
-                //CheckFolder();
+                CheckFolder();
 
                 GetVersionGameAndTool();
 
@@ -581,6 +581,19 @@ namespace Civilization_VI_Việt_Hóa
                                 label5.Visible = true;
                                 label5.Text = "Việt hóa thành công!";
                                 UpdateTextVersion();
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    File.Delete(pathGame + "\\" + strMaster + ".zip");
+                                    TaiVietHoa();
+                                }
+                                catch (Exception exception)
+                                {
+                                    ravenClient.Capture(new SentryEvent(exception));
+                                    MessageBox.Show("Hãy xóa file " + strMaster + ".zip");
+                                }
                             }
                         }
                     }
