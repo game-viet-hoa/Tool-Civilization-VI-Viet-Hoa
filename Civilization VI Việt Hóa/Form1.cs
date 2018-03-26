@@ -30,6 +30,8 @@ namespace Civilization_VI_Việt_Hóa
         private Boolean viethoa = true;
         private string strMaster = "master";
 
+        private string urlTool = "https://github.com/game-viet-hoa/Civilization-VI-Viet-Hoa/releases/download/latest/Civilization.VI.Viet.Hoa.exe";
+
         public Form1()
         {
             InitializeComponent();
@@ -86,7 +88,7 @@ namespace Civilization_VI_Việt_Hóa
             {
                 var webClient2 = new WebClient();
                 webClient2.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
-                versionGameNew = webClient2.DownloadString("https://raw.githubusercontent.com/xkvnn/Civilization-VI-Viet-Hoa/master/VERSIONGAME");
+                versionGameNew = webClient2.DownloadString("https://raw.githubusercontent.com/game-viet-hoa/Civilization-VI-Viet-Hoa/master/VERSIONGAME");
 
                 var version1 = new Version(versionGame);
                 var version2 = new Version(versionGameNew);
@@ -101,7 +103,7 @@ namespace Civilization_VI_Việt_Hóa
                     strMaster = versionGame;
                 
                 webClient2.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
-                versionVietHoaNew = webClient2.DownloadString("https://raw.githubusercontent.com/xkvnn/Civilization-VI-Viet-Hoa/" + strMaster + "/VERSION");
+                versionVietHoaNew = webClient2.DownloadString("https://raw.githubusercontent.com/game-viet-hoa/Civilization-VI-Viet-Hoa/" + strMaster + "/VERSION");
             }
             catch (Exception exception)
             {
@@ -319,7 +321,7 @@ namespace Civilization_VI_Việt_Hóa
             {
                 var webClient = new WebClient();
                 webClient.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
-                versionToolNew = webClient.DownloadString("https://raw.githubusercontent.com/xkvnn/Civilization-VI-Viet-Hoa/master/VERSIONTOOL");
+                versionToolNew = webClient.DownloadString("https://raw.githubusercontent.com/game-viet-hoa/Civilization-VI-Viet-Hoa/master/VERSIONTOOL");
             }
             catch (Exception exception)
             {
@@ -336,7 +338,7 @@ namespace Civilization_VI_Việt_Hóa
                     var webClient = new WebClient();
                     webClient.Encoding = Encoding.UTF8;
                     webClient.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
-                    contantNew = webClient.DownloadString("https://github.com/xkvnn/Civilization-VI-Viet-Hoa/releases/download/latest/Civilization.VI.Viet.Hoa.exe");
+                    contantNew = webClient.DownloadString(urlTool);
                 }
                 catch (Exception exception)
                 {
@@ -351,7 +353,7 @@ namespace Civilization_VI_Việt_Hóa
 
                 DialogResult dialogResult = MessageBox.Show("Tool có phiên bản mới (" + versionToolNew + "):\n    " + contantNew + "\n\nBạn có muốn tải không?", "Tool Update", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)
-                    System.Diagnostics.Process.Start("https://raw.githubusercontent.com/xkvnn/Civilization-VI-Viet-Hoa/master/Civilization%20VI%20Vi%E1%BB%87t%20H%C3%B3a.exe");
+                    System.Diagnostics.Process.Start(urlTool);
 
             }
         }
@@ -416,7 +418,7 @@ namespace Civilization_VI_Việt_Hóa
                 WebClient client = new WebClient();
                 client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
                 client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
-                client.DownloadFileAsync(new Uri("https://github.com/xkvnn/Civilization-VI-Viet-Hoa/archive/" + strMaster + ".zip"),
+                client.DownloadFileAsync(new Uri("https://github.com/game-viet-hoa/Civilization-VI-Viet-Hoa/archive/" + strMaster + ".zip"),
                     pathGame + "\\" + strMaster + ".zip");
             });
             thread.Start();
